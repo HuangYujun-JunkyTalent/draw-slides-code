@@ -83,7 +83,7 @@ test("the picture of a page is named after the page and a digest of its address 
 	const [found] = snapshots.embeddedPages(xml.parseXml(embedded));
 	assert.equal(
 		snapshots.snapshotFile("/shots", found),
-		"/shots/surface-ea075e8ec82fdfe7.png"
+		path.join("/shots", "surface-ea075e8ec82fdfe7.png")
 	);
 });
 

@@ -64,8 +64,8 @@ test("a new deck is a repository with its first section, its commands, its setti
 		title: "My Talk [1]",
 	});
 	assert.deepEqual(plain(result.lines), [
-		"sections/1-my-talk.drawio.xml written with the pages title-slide-1, section-divider-1, title-and-body-1",
-		`package.json, drawslidescode.cjs and .vscode/settings.json written, and ${project} is a git repository of its own`,
+		`${path.normalize("sections/1-my-talk.drawio.xml")} written with the pages title-slide-1, section-divider-1, title-and-body-1`,
+		`package.json, drawslidescode.cjs and ${path.normalize(".vscode/settings.json")} written, and ${project} is a git repository of its own`,
 	]);
 	const section = fs.readFileSync(
 		path.join(project, "sections/1-my-talk.drawio.xml"),
