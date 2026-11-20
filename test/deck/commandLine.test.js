@@ -282,7 +282,8 @@ test("the launcher of a deck runs the command line of the newest installed versi
 		setUp.launcherFile(extensionRoot),
 		path.join(project, "drawslidescode.cjs")
 	);
-	const environment = { PATH: process.env.PATH, HOME: home };
+	// os.homedir() reads USERPROFILE on Windows and HOME elsewhere.
+	const environment = { PATH: process.env.PATH, HOME: home, USERPROFILE: home };
 	const launch = (extra) =>
 		childProcess.spawnSync(
 			process.execPath,

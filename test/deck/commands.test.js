@@ -89,7 +89,9 @@ function listFiles(folder) {
 				}
 				return entry.isDirectory() ? walk(child) : [child];
 			});
-	return walk("").sort();
+	return walk("")
+		.map((file) => file.split(path.sep).join("/"))
+		.sort();
 }
 
 /** A deck of one section file with two pages. */
@@ -479,7 +481,7 @@ test("the build of the deck of the active drawing writes the HTML file with the 
 	const done = lastMessageOf("information");
 	assert.equal(
 		done.text,
-		`build/deck.html of deck written, with ${warnings.length} warnings in the output.`
+		`${path.normalize("build/deck.html")} of deck written, with ${warnings.length} warnings in the output.`
 	);
 	assert.deepEqual(done.buttons, ["Open HTML File", "Show Output"]);
 	assert.deepEqual(
