@@ -165,7 +165,11 @@ export function colorFileText(
 	source: string,
 	file: string
 ): string {
-	const relative = path.relative(path.dirname(path.resolve(file)), source);
+	// Written with "/" on every system, so that a deck writes the same file everywhere.
+	const relative = path
+		.relative(path.dirname(path.resolve(file)), source)
+		.split(path.sep)
+		.join("/");
 	return `% ${GENERATED_MARK} from ${COLORS} of ${relative}.\n${colorLines(
 		colors
 	)}`;

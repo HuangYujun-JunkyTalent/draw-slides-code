@@ -316,7 +316,7 @@ test("the pictures of assets/ are written into the slide files as data, and a mi
 		"slides.drawio.xml"
 	);
 	assert.deepEqual(first.lines, [
-		"sections/1-start.drawio.xml: 1 picture written as data",
+		`${path.normalize("sections/1-start.drawio.xml")}: 1 picture written as data`,
 	]);
 	assert.deepEqual(first.warnings, [
 		"assets/b.png does not exist, so its cells stay as they are",

@@ -282,7 +282,9 @@ test("the launcher of a deck runs the command line of the newest installed versi
 		setUp.launcherFile(extensionRoot),
 		path.join(project, "drawslidescode.cjs")
 	);
-	const environment = { PATH: process.env.PATH, HOME: home };
+	// os.homedir() reads USERPROFILE on Windows and HOME elsewhere.
+	const homeAt = (folder) => ({ HOME: folder, USERPROFILE: folder });
+	const environment = { PATH: process.env.PATH, ...homeAt(home) };
 	const launch = (extra) =>
 		childProcess.spawnSync(
 			process.execPath,
@@ -309,7 +311,7 @@ test("the launcher of a deck runs the command line of the newest installed versi
 		JSON.parse(named.stdout).folder,
 		"yujunhuang.drawslidescode-0.2.0"
 	);
-	const missing = launch({ HOME: folderWith({}) });
+	const missing = launch(homeAt(folderWith({})));
 	assert.equal(missing.status, 1);
 	assert.match(missing.stderr, /yujunhuang.drawslidescode is not installed/);
 	// VSCodium keeps its extensions in ~/.vscode-oss/extensions, which the launcher compares with

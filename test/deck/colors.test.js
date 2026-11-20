@@ -208,7 +208,7 @@ test("a deck that still holds drawSlidesCode.colorDefinitions stops with the com
 		settings.settingPath(deck, "${workspaceFolder}/a/../b.tex"),
 		path.join(deck, "b.tex")
 	);
-	assert.equal(settings.settingPath(deck, "/x/y.tex"), "/x/y.tex");
+	assert.equal(settings.settingPath(deck, "/x/y.tex"), path.resolve(deck, "/x/y.tex"));
 });
 
 test("colors convert from TeX files into the setting and back with their comments", () => {

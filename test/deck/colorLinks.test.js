@@ -1,4 +1,5 @@
 const assert = require("node:assert/strict");
+const path = require("node:path");
 const { test } = require("node:test");
 const { loadTsModule } = require("../loadTsModule");
 const { folderWith, page, drawing } = require("./deckHelpers");
@@ -133,7 +134,7 @@ test("the section files of a deck are its slides folder, or else its multi-page 
 		"parts/1-a.drawio.xml": drawing(),
 		"parts/notes.txt": "",
 	});
-	assert.deepEqual(colorFiles.deckSectionFiles(sections).map((file) => file.slice(sections.length + 1)), ["parts/1-a.drawio.xml", "parts/2-b.drawio.xml"]);
+	assert.deepEqual(colorFiles.deckSectionFiles(sections).map((file) => file.slice(sections.length + 1)), ["parts/1-a.drawio.xml", "parts/2-b.drawio.xml"].map(path.normalize));
 	const single = folderWith({ "slides.drawio.xml": drawing() });
 	assert.deepEqual(colorFiles.deckSectionFiles(single).map((file) => file.slice(single.length + 1)), ["slides.drawio.xml"]);
 	assert.deepEqual(colorFiles.deckSectionFiles(folderWith({ "a.txt": "" })), []);
