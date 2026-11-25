@@ -553,6 +553,8 @@ With `drawSlidesCode.slides` on, the extension loads the plugins in its folder `
 - `language-check.plugin.js` underlines the spelling and the grammar of the label being edited, as the section on spelling below says.
 - `view-position.plugin.js` leaves the position of the view, the attributes `dx` and `dy` of `<mxGraphModel>`, out of every page that the editor saves, so a scroll alone changes no section file.
   A file then opens at the default view of the editor.
+- `page-attribute-order.plugin.js` writes the attributes of `<mxGraphModel>` of every page that the editor saves in one order, the order of the page on screen, which the template and the section files hold.
+  Without it, the editor writes a page off screen whose cells changed, such as a page that a merge of a rewritten file reached, with `page` moved after `grid`, so a save changes the section file although no cell changed.
 - `deck-pictures.plugin.js` draws a picture whose style names a file of the presentation, such as `image=assets/plot.png`, from that file.
 - `insert-slide.plugin.js` adds *Insert slide* to the menus *Insert* and *Pages*, with one entry per page of each template, as the paragraph after the list styles says.
 - `deck-files.js` gives the plugins that read a file of the presentation, such as a video or a picture, the address of the file in the editor.

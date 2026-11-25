@@ -74,6 +74,7 @@ const SLIDE_PLUGINS = [
 	"list-styles.plugin.js",
 	"language-check.plugin.js",
 	"view-position.plugin.js",
+	"page-attribute-order.plugin.js",
 	"deck-pictures.plugin.js",
 	"insert-slide.plugin.js",
 	"media-bar.js",

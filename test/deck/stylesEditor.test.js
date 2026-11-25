@@ -2,31 +2,17 @@
 // browser of the build: the plugins of the slides load into the editor as the extension loads them,
 // and the window stands in for the extension, which receives the edits that the section sends.
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const http = require("node:http");
 const path = require("node:path");
 const { after, test } = require("node:test");
 const { loadTsModule } = require("../loadTsModule");
 const { extensionRoot } = require("./deckHelpers");
+const { serveEditor } = require("./editorServer");
 
 const browser = loadTsModule("deck/deckBrowser.ts");
 const styles = loadTsModule("deck/deckStyles.ts");
 const rules = styles.loadDeckStyleRules(
 	path.join(extensionRoot, "drawio-custom-plugins", "slides", "deck-style-rules.js")
 );
-
-const WEBAPP = path.join(extensionRoot, "drawio", "src", "main", "webapp");
-const PLUGINS = path.join(extensionRoot, "drawio-custom-plugins", "slides");
-const TYPES = {
-	".html": "text/html",
-	".js": "text/javascript",
-	".css": "text/css",
-	".svg": "image/svg+xml",
-	".png": "image/png",
-	".json": "application/json",
-	".xml": "application/xml",
-	".txt": "text/plain",
-};
 
 // A functionality wire and a resource wire of a co-design diagram: the dot of each is tangent to
 // the border of the box it is attached to, through the negative spacing with fixedPointSpacing=1.
@@ -67,29 +53,6 @@ const DIAGRAM =
 	vertex("e1", "ellipse;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=3;", 900, 100) +
 	vertex("e2", "whiteSpace=wrap;html=1;shape=ellipse;perimeter=ellipsePerimeter;fillColor=none;rotation=30;", 900, 400) +
 	"</root></mxGraphModel></diagram></mxfile>";
-
-/** A server of the files of draw.io and of the plugins of the slides, on a free port. */
-function serveEditor() {
-	const server = http.createServer((request, response) => {
-		const url = new URL(request.url, "http://localhost");
-		const [root, relative] = url.pathname.startsWith("/slides/")
-			? [PLUGINS, url.pathname.slice("/slides/".length)]
-			: [WEBAPP, url.pathname.slice(1) || "index.html"];
-		const file = path.resolve(root, decodeURIComponent(relative));
-		if (!file.startsWith(root) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
-			response.writeHead(404);
-			response.end();
-			return;
-		}
-		response.writeHead(200, {
-			"Content-Type": TYPES[path.extname(file)] ?? "application/octet-stream",
-		});
-		fs.createReadStream(file).pipe(response);
-	});
-	return new Promise((resolve) =>
-		server.listen(0, "127.0.0.1", () => resolve(server))
-	);
-}
 
 const browserStarts = browser.launchBrowser().then(
 	(launched) => launched,

@@ -5,10 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## yujunhuang.drawslidescode [Unreleased]
+## yujunhuang.drawslidescode [0.2.1]
 
 ### Fixed
 
+- The editor of a deck writes the attributes of `<mxGraphModel>` of every page in one order, through the plugin `page-attribute-order.plugin.js`.
+  The editor wrote a page off screen whose cells had changed, such as a page that a merge of a file rewritten by a script reached, with `page` second among the attributes, so git showed the section file as modified on pages that nobody edited.
 - The command Export Colors to TeX names the settings file in the header of the TeX file with `/` on Windows too, so that a deck writes the same file on every system.
 
 ## yujunhuang.drawslidescode [0.2.0]
