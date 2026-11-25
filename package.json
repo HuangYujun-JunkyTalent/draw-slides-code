@@ -3,7 +3,7 @@
 	"private": true,
 	"displayName": "DrawSlidesCode",
 	"description": "Edits and builds slide decks drawn in draw.io, as a fork of the Draw.io Integration of Henning Dieterichs. Not made or endorsed by draw.io Ltd.",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"preRelease": false,
 	"license": "GPL-3.0",
 	"publisher": "yujunhuang",
@@ -58,8 +58,9 @@
 	"capabilities": {
 		"untrustedWorkspaces": {
 			"supported": "limited",
-			"description": "In Restricted Mode, workspace settings cannot load custom libraries or plugins, or change which Draw.io app the editor loads, and the commands that set up, build, watch, check or outline a presentation or convert its colors do not run.",
+			"description": "In Restricted Mode, workspace settings cannot load custom libraries or plugins, change the Draw.io configuration, or change which Draw.io app the editor loads, and the commands that set up, build, watch, check or outline a presentation or convert its colors do not run.",
 			"restrictedConfigurations": [
+				"drawSlidesCode.config",
 				"drawSlidesCode.customLibraries",
 				"drawSlidesCode.plugins",
 				"drawSlidesCode.slides",
@@ -354,6 +355,13 @@
 						"description": "When activated, selecting a node will navigate to an associated code section.",
 						"order": 20
 					},
+					"drawSlidesCode.config": {
+						"type": "object",
+						"default": {},
+						"title": "Draw.io Configuration",
+						"markdownDescription": "Options of the [Draw.io configuration](https://www.drawio.com/doc/faq/configure-diagram-editor), for example `{\"zoomWheel\": false}` to scroll with the mouse wheel. In newer Draw.io versions, you can also change them in the editor in *Extras > Configuration*, which stores them in the user settings (API keys in the secret storage) and hides the options of the workspace settings. Options that have a setting of their own, such as `customFonts`, are stored in that setting.",
+						"order": 25
+					},
 					"drawSlidesCode.local-storage": {
 						"anyOf": [
 							{
@@ -443,19 +451,6 @@
 				"title": "Inline Editor",
 				"order": 15,
 				"properties": {
-					"drawSlidesCode.inlineEditor.theme": {
-						"type": "string",
-						"default": "auto",
-						"enum": [
-							"auto",
-							"kennedy",
-							"min",
-							"atlas",
-							"dark",
-							"sketch"
-						],
-						"description": "Editor UI theme"
-					},
 					"drawSlidesCode.inlineEditor.autoLock": {
 						"type": "boolean",
 						"default": false,
@@ -987,7 +982,7 @@
 	},
 	"scripts": {
 		"lint": "echo 'add linting'",
-		"test": "node --test test/slide-colors/*.test.js test/deck-setup/*.test.js test/codeblock-editor/*.test.js test/deck/*.test.js",
+		"test": "node --test test/slide-colors/*.test.js test/deck-setup/*.test.js test/codeblock-editor/*.test.js test/deck/*.test.js test/drawio-configuration/*.test.js test/drawio-client/*.test.js test/inline-editor/*.test.js",
 		"build": "yarn build-extension && yarn build-plugins && yarn package-extension",
 		"build-extension": "webpack --mode production",
 		"build-plugins": "webpack --mode production --config ./drawio-custom-plugins/webpack.config.ts",
@@ -1063,6 +1058,7 @@
 		"entities": "^4.5.0",
 		"js-sha256": "^0.9.0",
 		"jsonc-parser": "^3.3.1",
+		"markdown-it": "^14.1.0",
 		"mithril": "^2.0.4",
 		"mobx": "5.15.4",
 		"mobx-utils": "5.5.7",
