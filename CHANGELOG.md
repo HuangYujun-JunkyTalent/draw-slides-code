@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## yujunhuang.drawslidescode [0.2.2]
+
+### Changed
+
+- The fork takes in version 1.19.0 of the original hediet.vscode-drawio, whose section follows the section of the fork's version 0.1.0 below, and draw.io 32.7.4 in place of 32.6.9.
+  The setting `drawSlidesCode.config` holds options of the configuration of draw.io, such as `{"zoomWheel": false}`, which scrolls the editor with the mouse wheel instead of zooming it.
+  The dialog Extras > Configuration of the editor writes the options into the user settings, and keeps the API keys of the AI options in the secret storage of VS Code.
+  The Markdown with Diagrams editor shows the text as the Markdown preview of VS Code does, and edits the source of the block clicked.
+  The setting `drawSlidesCode.inlineEditor.theme`, which had no effect, is removed.
+
+### Fixed
+
+- The inline Markdown editors run only the commands of VS Code that the code block editor allows, and open only http, https and mailto links, where they ran any command and opened any link that a diagram asked for.
+
 ## yujunhuang.drawslidescode [0.2.1]
 
 ### Fixed
@@ -71,6 +85,26 @@ The versions below are those of the original hediet.vscode-drawio, from which th
 ### Removed
 
 - The workflows of the original that published to the Marketplace, triaged issues and opened pull requests for new versions of draw.io.
+
+## [1.19.0]
+
+### Added
+
+- `hediet.vscode-drawio.config` holds options of the [Draw.io configuration](https://www.drawio.com/doc/faq/configure-diagram-editor), for example `{"zoomWheel": false}` to scroll with the mouse wheel instead of zooming [#552](https://github.com/hediet/vscode-drawio/issues/552). The Draw.io editor and the inline Markdown editors use it; a setting of the extension that is set wins over the same option there. In newer Draw.io versions, _Extras > Configuration_ in the editor changes it too and keeps API keys in VS Code's secret storage instead of the settings
+
+### Changed
+
+- Updated Draw.io to v32.6.10
+- The Markdown with Diagrams editor shows the text as VS Code's Markdown preview does and edits it as Markdown: a click on a paragraph, heading or list shows its source, and an edit changes only its lines. Enter continues lists and quotes, Tab indents list items, Ctrl/Cmd+B and Ctrl/Cmd+I toggle bold and italic, and Ctrl/Cmd+click opens a link
+
+### Removed
+
+- The `drawio-inline-editor.theme` setting, which had no effect: the inline editors follow `hediet.vscode-drawio.theme`
+
+### Fixed
+
+- The inline Markdown editors ran any VS Code command and opened any link a diagram asked for. They now run only the commands the code block editor allows and open only http(s) and mailto links
+- Saving a diagram in the Markdown with Diagrams editor could write it into another block that looked the same. It now saves nothing if its block can't be found for sure
 
 ## [1.18.0]
 

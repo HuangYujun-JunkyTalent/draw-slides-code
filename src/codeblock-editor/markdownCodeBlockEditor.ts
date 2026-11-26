@@ -20,7 +20,13 @@ import * as vscode from "vscode";
 import { sha256 } from "js-sha256";
 import { Config, DiagramConfig } from "../Config";
 import { DrawioLibrarySection, simpleDrawioLibrary } from "../DrawioClient";
-import { VSCODE_PASSTHROUGH_KEYS } from "../vscodeShortcuts";
+import {
+	VSCODE_PASSTHROUGH_COMMANDS,
+	VSCODE_PASSTHROUGH_KEYS,
+	isExternalLink,
+} from "../vscodeShortcuts";
+import { withConfigSetting } from "../drawioConfiguration";
+import { toScriptJson } from "../utils/toScriptJson";
 import { parseBlockAttrs } from "../inline-editor/diagramParser";
 import {
 	GuestConfig,
@@ -132,11 +138,6 @@ export function createMarkdownCodeBlockEditorsApi(
 	);
 	/** Document a runtime (= one resolved HTML variant) was created for. */
 	const runtimeDocuments = new Map<string, vscode.Uri>();
-	const allowedCommands = new Set(
-		VSCODE_PASSTHROUGH_KEYS.map((k) => k.command).filter(
-			(c): c is string => c !== null
-		)
-	);
 
 	const provider: MarkdownCodeBlockEditorProvider = {
 		async resolve(request, token) {
@@ -196,12 +197,14 @@ export function createMarkdownCodeBlockEditorsApi(
 					case "command":
 						// The guest runs untrusted diagram content: only run the
 						// chords we deliberately hand back to VS Code.
-						if (allowedCommands.has(message.command)) {
+						if (VSCODE_PASSTHROUGH_COMMANDS.has(message.command)) {
 							vscode.commands.executeCommand(message.command);
 						}
 						break;
 					case "openLink":
-						vscode.env.openExternal(vscode.Uri.parse(message.href));
+						if (isExternalLink(message.href)) {
+							vscode.env.openExternal(vscode.Uri.parse(message.href));
+						}
 						break;
 					case "updateLocalStorage":
 						diagramConfig?.setLocalStorage(message.newLocalStorage);
@@ -262,7 +265,9 @@ async function buildGuestConfig(
 		urlParams.toolbar = "0";
 	}
 
-	const drawioConfig: Record<string, unknown> = {
+	// The settings, then the hediet.vscode-drawio.config setting, then the
+	// options of this editor, which the config setting cannot change
+	const drawioConfig = withConfigSetting(dc.uri, {
 		compressXml: false,
 		customFonts: dc.customFonts,
 		presetColors: dc.presetColors,
@@ -284,6 +289,7 @@ async function buildGuestConfig(
 		showTooltipIcons: dc.showTooltipIcons || undefined,
 		showLinkIcons: dc.showLinkIcons || undefined,
 		showConnectHandle: dc.showConnectHandle || undefined,
+	}, {
 		compact: true,
 		css: INLINE_CSS,
 		darkColor: "#1e1e1e",
@@ -294,6 +300,9 @@ async function buildGuestConfig(
 		settingsName: "vscode-codeblock-editor",
 		noAutoFocus: true,
 		passiveScroll: true,
+		// The wheel scrolls the Markdown document, also if the config setting
+		// zooms with the wheel in the editor (zoomWheel wins over passiveScroll)
+		zoomWheel: false,
 		preserveViewState: true,
 		noResizers: true,
 		useInternalClipboard: true,
@@ -308,7 +317,7 @@ async function buildGuestConfig(
 			"exit",
 		],
 		hideMenus: ["language", "help"],
-	};
+	});
 
 	const diagramPadding = vscode.workspace
 		.getConfiguration("drawSlidesCode.inlineEditor")
@@ -333,8 +342,8 @@ async function buildGuestConfig(
  * to `<head>`, so relative URLs resolve inside the bundled webapp.
  */
 export function buildGuestHtml(guestConfig: GuestConfig): string {
-	// `<` is escaped so no fence content can break out of the JSON element.
-	const configJson = JSON.stringify(guestConfig).replace(/</g, "\\u003c");
+	// Escaped so no fence content can break out of the JSON element.
+	const configJson = toScriptJson(guestConfig);
 	const drawioStyles =
 		guestConfig.mode.kind === "offline"
 			? `<link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
